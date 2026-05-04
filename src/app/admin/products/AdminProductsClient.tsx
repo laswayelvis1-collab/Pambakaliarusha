@@ -649,14 +649,66 @@ function ProductModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1">Image URLs (comma separated)</label>
-            <input
-              type="text"
-              placeholder="https://..., https://..."
-              value={formData.image_urls}
-              onChange={(e) => setFormData({ ...formData, image_urls: e.target.value })}
-              className="w-full px-4 py-3 rounded-lg bg-background border-2 border-transparent text-foreground focus:border-primary focus:outline-none premium-3d-elevated"
-            />
+            <label className="block text-sm font-medium text-foreground mb-1">Image URL or Upload</label>
+            <div className="space-y-3">
+              <input
+                type="url"
+                placeholder="Paste image URL (https://...)"
+                value={formData.image_urls}
+                onChange={(e) => setFormData({ ...formData, image_urls: e.target.value })}
+                className="w-full px-4 py-3 rounded-lg bg-background border-2 border-transparent text-foreground focus:border-primary focus:outline-none premium-3d-elevated"
+              />
+              <div className="relative">
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={async (e) => {
+                    const files = e.target.files;
+                    if (!files || files.length === 0) return;
+                    
+                    const uploadedUrls: string[] = [];
+                    
+                    for (let i = 0; i < files.length; i++) {
+                      const file = files[i];
+                      const reader = new FileReader();
+                      
+                      const imageUrl = await new Promise<string>((resolve) => {
+                        reader.onload = () => resolve(reader.result as string);
+                        reader.readAsDataURL(file);
+                      });
+                      
+                      uploadedUrls.push(imageUrl);
+                    }
+                    
+                    setFormData({ ...formData, image_urls: uploadedUrls.join(", ") });
+                  }}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+                <div className="w-full px-4 py-3 rounded-lg bg-primary/10 border-2 border-dashed border-primary/30 text-center text-sm text-primary font-medium cursor-pointer hover:bg-primary/20 transition-colors">
+                  📷 Tap to select from Gallery
+                </div>
+              </div>
+              {formData.image_urls && (
+                <div className="flex flex-wrap gap-2">
+                  {formData.image_urls.split(",").filter(Boolean).map((url, idx) => (
+                    <div key={idx} className="relative w-20 h-20 rounded-lg overflow-hidden border border-border">
+                      <img src={url.trim()} alt={`Preview ${idx + 1}`} className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const urls = formData.image_urls.split(",").filter((_, i) => i !== idx);
+                          setFormData({ ...formData, image_urls: urls.join(",") });
+                        }}
+                        className="absolute top-0 right-0 bg-destructive text-white w-5 h-5 flex items-center justify-center text-xs"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           <label className="flex items-center gap-3 cursor-pointer">
