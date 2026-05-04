@@ -1,10 +1,13 @@
 "use client";
 
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ShoppingBag, Heart, Eye } from "lucide-react";
 import { Badge } from "./Badge";
 import classNames from "classnames";
+import { useState } from "react";
 
 interface ProductCardProps {
   id: string;
@@ -29,10 +32,12 @@ export function ProductCard({
   isSale,
   isSoldOut,
 }: ProductCardProps) {
+  const [imgError, setImgError] = useState(false);
   const hasDiscount = originalPrice && originalPrice > price;
   const discountPercent = hasDiscount
     ? Math.round(((originalPrice! - price) / originalPrice!) * 100)
     : 0;
+  const displayImage = imgError || !image ? "/placeholder.jpg" : image;
 
   return (
     <article className="group relative">
@@ -45,10 +50,12 @@ export function ProductCard({
       >
         <Link href={`/product/${id}`} className="block relative aspect-[4/5]">
           <Image
-            src={image}
+            src={displayImage}
             alt={name}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"
+            onError={() => setImgError(true)}
+            unoptimized
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </Link>

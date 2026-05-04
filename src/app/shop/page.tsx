@@ -80,10 +80,16 @@ export default async function ShopPage({
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
-              {products.map((product: any) => (
+              {products.map((product: any) => {
+                const images = Array.isArray(product.image_urls) 
+                  ? product.image_urls 
+                  : typeof product.image_urls === 'string' 
+                    ? JSON.parse(product.image_urls || '[]') 
+                    : [];
+                return (
                 <ProductCard
                   key={product.id}
-                  id={product.id}
+                  id={product.slug || product.id}
                   name={product.title}
                   price={product.price_cents / 100}
                   originalPrice={
@@ -91,12 +97,12 @@ export default async function ShopPage({
                       ? product.original_price_cents / 100
                       : undefined
                   }
-                  image={product.image_urls?.[0] || "/placeholder.jpg"}
+                  image={images[0] || "/placeholder.jpg"}
                   category={product.category}
                   isNew={product.stock > 40}
                   isSale={!!product.original_price_cents}
                 />
-              ))}
+              )})}
             </div>
           )}
         </div>
