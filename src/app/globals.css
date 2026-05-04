@@ -93,6 +93,20 @@
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
     font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  input, button, select, textarea, a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  a, button {
+    touch-action: manipulation;
   }
 }
 

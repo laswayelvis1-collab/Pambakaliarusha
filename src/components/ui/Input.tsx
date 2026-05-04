@@ -32,7 +32,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             error ? errorId : helperText ? helperId : undefined
           }
           className={classNames(
-            "w-full px-4 py-3 rounded-lg text-base",
+            "w-full px-4 py-3.5 rounded-lg text-base min-h-[48px]",
             "bg-card text-foreground placeholder:text-muted-foreground",
             "border-2 border-transparent",
             "transition-all duration-200",

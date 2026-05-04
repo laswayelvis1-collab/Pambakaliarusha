@@ -11,7 +11,7 @@ const navLinks = [
   { name: "Shop", href: "/shop" },
   { name: "New Arrivals", href: "/new-arrivals" },
   { name: "Collections", href: "/collections" },
-  { name: "About Us", href: "/about" },
+  { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
 ];
 
@@ -146,15 +146,15 @@ export function Header() {
       <div
         className={classNames(
           "lg:hidden overflow-hidden transition-all duration-300",
-          isMenuOpen ? "max-h-80" : "max-h-0"
+          isMenuOpen ? "max-h-96" : "max-h-0"
         )}
       >
-        <nav className="px-4 py-4 space-y-2 bg-background border-t border-border/50">
+        <nav className="px-4 py-4 space-y-1 bg-background border-t border-border/50">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}
-              className="block py-3 px-4 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-lg transition-colors"
+              className="block py-4 px-4 text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-lg transition-colors min-h-[48px] flex items-center"
               onClick={() => setIsMenuOpen(false)}
             >
               {link.name}
