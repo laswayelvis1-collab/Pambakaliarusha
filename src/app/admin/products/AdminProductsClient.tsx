@@ -216,6 +216,26 @@ export function AdminProductsClient({ initialProducts, error }: AdminProductsCli
     }
   };
 
+  const handleDeleteProduct = async (product: Product) => {
+    if (!confirm(`Are you sure you want to delete "${product.title}"?`)) return;
+    
+    setIsLoading(true);
+    try {
+      const res = await fetch(`/api/admin/products/${product.id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.error || "Failed to delete product");
+        return;
+      }
+      fetchProducts();
+    } catch (err) {
+      console.error("Failed to delete product:", err);
+      alert("Failed to delete product");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const openEditModal = (product: Product) => {
     setEditingProduct(product);
     setFormData({
@@ -425,6 +445,7 @@ export function AdminProductsClient({ initialProducts, error }: AdminProductsCli
                               <Edit className="w-4 h-4" />
                             </button>
                             <button
+                              onClick={() => handleDeleteProduct(product)}
                               className={classNames(
                                 "p-2 rounded-lg text-muted-foreground",
                                 "hover:text-destructive hover:bg-destructive/10",

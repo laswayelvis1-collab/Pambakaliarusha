@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  Apple,
   ArrowRight,
   Eye,
   EyeOff,
@@ -13,7 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { getSupabaseClient } from "@/lib/supabase/client";
+import { getSupabaseBrowserClient } from "@/lib/supabase/browserClient";
 import classNames from "classnames";
 
 export default function RegisterPage() {
@@ -48,7 +47,7 @@ export default function RegisterPage() {
     setError(null);
 
     try {
-      const client = getSupabaseClient();
+      const client = getSupabaseBrowserClient();
       
       if (!client) {
         setError("Authentication not configured");
@@ -79,7 +78,7 @@ export default function RegisterPage() {
     setError(null);
 
     try {
-      const client = getSupabaseClient();
+      const client = getSupabaseBrowserClient();
       
       if (!client) {
         setError("OAuth is not configured");
@@ -135,9 +134,12 @@ export default function RegisterPage() {
         <div className="text-center mb-8">
           <Link
             href="/"
-            className="text-2xl font-bold text-foreground hover:opacity-80 transition-opacity"
+            className="text-2xl font-bold text-foreground hover:opacity-80 transition-opacity inline-flex"
           >
-            <span className="font-extrabold tracking-tight">Pamba</span>kaliarusha
+            <span className="px-2 py-1 rounded-xl glass-liquid font-extrabold">
+              Pamba
+            </span>
+            <span className="font-extrabold">kaliarusha</span>
           </Link>
           <h1 className="text-2xl font-bold text-foreground mt-8 mb-2">
             Create Account
@@ -154,21 +156,6 @@ export default function RegisterPage() {
         )}
 
         <div className="space-y-4">
-          <button
-            onClick={() => handleOAuthLogin("apple")}
-            disabled={isLoading}
-            className={classNames(
-              "w-full flex items-center justify-center gap-3",
-              "py-3 px-4 rounded-lg font-medium",
-              "bg-black text-white hover:bg-black/90",
-              "premium-3d-button transition-all duration-200",
-              "disabled:opacity-50 disabled:cursor-not-allowed"
-            )}
-          >
-            <Apple className="w-5 h-5" />
-            Continue with Apple
-          </button>
-
           <button
             onClick={() => handleOAuthLogin("google")}
             disabled={isLoading}

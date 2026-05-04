@@ -14,13 +14,13 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    "bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80",
+    "bg-primary/90 text-primary-foreground border-primary/40 hover:bg-primary active:bg-primary/80",
   secondary:
-    "bg-secondary text-secondary-foreground hover:bg-secondary/80 active:bg-secondary/70",
+    "dark:bg-secondary/40 dark:bg-secondary/30 dark:text-secondary-foreground bg-secondary/60 text-secondary-foreground border-secondary/30 hover:bg-secondary/80 active:bg-secondary/70",
   outline:
-    "border-2 border-border bg-transparent text-foreground hover:bg-accent hover:border-accent",
+    "bg-transparent/20 dark:bg-transparent/10 text-foreground dark:text-foreground border-border/40 dark:border-border/60 hover:bg-white/20 dark:hover:bg-white/10 hover:border-foreground/30 active:bg-white/30 dark:active:bg-white/5",
   ghost:
-    "bg-transparent text-foreground hover:bg-accent",
+    "bg-transparent/20 dark:bg-transparent/10 text-foreground dark:text-foreground border-transparent hover:bg-white/20 dark:hover:bg-white/10 hover:border-border/30 active:bg-white/30 dark:active:bg-white/5",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
@@ -35,18 +35,26 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={classNames(
-          "inline-flex items-center justify-center font-medium rounded-lg",
-          "transition-all duration-200",
-          "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2",
+          "relative inline-flex items-center justify-center font-medium rounded-2xl",
+          "transition-all duration-300 ease-out",
+          "focus:outline-none focus-visible:ring-2 focus-visible-ring-primary/30 focus-visible:ring-offset-2",
           "disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none",
-          "premium-3d-button active:premium-3d-inner active:translate-y-0.5",
+          "backdrop-blur-xl saturate-150",
+          "border shadow-lg",
+          "before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-b before:from-white/20 before:to-transparent dark:before:from-white/10 before:opacity-0 before:transition-opacity before:duration-300",
+          "hover:before:opacity-100",
+          "after:absolute after:inset-0 after:rounded-2xl after:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2)] dark:after:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)]",
+          "active:scale-[0.98]",
           variantStyles[variant],
           sizeStyles[size],
           className
         )}
+        style={{
+          boxShadow: "0 8px 24px rgba(0,0,0,0.12), inset 0 1px 0 0 rgba(255,255,255,0.15)",
+        }}
         {...props}
       >
-        {children}
+        <span className="relative z-10">{children}</span>
       </button>
     );
   }

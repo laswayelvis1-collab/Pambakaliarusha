@@ -50,3 +50,32 @@ export async function PUT(
 
   return NextResponse.json({ product: data });
 }
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    await requireAdmin();
+  } catch {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!supabaseUrl || !supabaseKey) {
+    return NextResponse.json({ error: "Database not configured" }, { status: 500 });
+  }
+
+  const { id } = await params;
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  const { error } = await supabase
+    .from("products")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ success: true });
+}

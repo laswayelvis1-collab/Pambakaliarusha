@@ -15,22 +15,35 @@ interface Product {
   image_urls: string[] | null;
 }
 
-async function getProducts() {
+async function getProducts(searchQuery?: string) {
   if (!supabaseUrl || !supabaseServiceKey) {
     const { products, getActiveProducts } = await import("@/lib/mockData");
-    return getActiveProducts().map((p) => ({
+    let filtered = getActiveProducts().map((p) => ({
       ...p,
       image_urls: p.image_urls,
     }));
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (p) => p.title.toLowerCase().includes(q) || p.category?.toLowerCase().includes(q)
+      );
+    }
+    return filtered;
   }
 
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-  const { data: products, error } = await supabase
+  let query = supabase
     .from("products")
     .select("id, title, slug, price_cents, original_price_cents, stock, category, image_urls")
     .eq("is_active", true)
     .order("created_at", { ascending: false });
+
+  if (searchQuery) {
+    query = query.ilike("title", `%${searchQuery}%`);
+  }
+
+  const { data: products, error } = await query;
 
   if (error || !products) {
     const { products: mockProducts, getActiveProducts } = await import("@/lib/mockData");
@@ -40,8 +53,13 @@ async function getProducts() {
   return products as Product[];
 }
 
-export default async function ShopPage() {
-  const products = await getProducts();
+export default async function ShopPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ search?: string }>;
+}) {
+  const params = await searchParams;
+  const products = await getProducts(params.search);
 
   return (
     <div className="min-h-screen">
@@ -49,7 +67,7 @@ export default async function ShopPage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-              Shop All
+              {params.search ? `Search: "${params.search}"` : "Shop All"}
             </h1>
             <p className="text-muted-foreground max-w-xl mx-auto">
               Discover our curated collection of premium essentials for the modern wardrobe.

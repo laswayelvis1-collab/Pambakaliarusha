@@ -11,6 +11,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Pambakali Arusha | Premium Shopping Experience",
   description: "Discover exquisite collections and new arrivals at Pambakali Arusha",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

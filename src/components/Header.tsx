@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Search, User, ShoppingBag, Menu, X } from "lucide-react";
 import classNames from "classnames";
 import { ThemeToggle } from "./ThemeToggle";
@@ -15,8 +16,20 @@ const navLinks = [
 ];
 
 export function Header() {
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [cartCount] = useState(3);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearchOpen(false);
+      setSearchQuery("");
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 premium-3d-light bg-background/80 glass-effect">
@@ -24,9 +37,12 @@ export function Header() {
         <div className="flex items-center justify-between h-16 lg:h-20">
           <Link
             href="/"
-            className="text-xl lg:text-2xl font-semibold tracking-tight text-foreground hover:opacity-80 transition-opacity"
+            className="text-xl lg:text-2xl font-semibold tracking-tight text-foreground hover:opacity-80 transition-opacity relative group"
           >
-            <span className="font-extrabold tracking-tight">Pamba</span>kaliarusha
+            <span className="relative z-10 px-2 py-1 rounded-xl glass-liquid font-extrabold">
+              Pamba
+            </span>
+            <span className="relative z-10 font-extrabold">kaliarusha</span>
           </Link>
 
           <nav className="hidden lg:flex items-center gap-8">
@@ -43,16 +59,43 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <button
-              className={classNames(
-                "p-2.5 rounded-lg premium-3d-button transition-all duration-200",
-                "hover:bg-accent hover:scale-105 active:scale-95",
-                "focus:outline-none focus:ring-2 focus:ring-primary/20"
-              )}
-              aria-label="Search"
-            >
-              <Search className="w-5 h-5 text-foreground" />
-            </button>
+            {isSearchOpen ? (
+              <form onSubmit={handleSearch} className="flex items-center">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search products..."
+                  autoFocus
+                  className="w-40 lg:w-64 px-3 py-2 rounded-l-lg bg-background border-2 border-r-0 border-transparent focus:border-primary outline-none text-foreground placeholder:text-muted-foreground"
+                />
+                <button
+                  type="submit"
+                  className="p-2.5 rounded-r-lg bg-primary text-primary-foreground"
+                >
+                  <Search className="w-5 h-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsSearchOpen(false)}
+                  className="p-2.5 ml-1 rounded-lg text-muted-foreground hover:text-foreground"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </form>
+            ) : (
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                className={classNames(
+                  "p-2.5 rounded-lg premium-3d-button transition-all duration-200",
+                  "hover:bg-accent hover:scale-105 active:scale-95",
+                  "focus:outline-none focus:ring-2 focus:ring-primary/20"
+                )}
+                aria-label="Search"
+              >
+                <Search className="w-5 h-5 text-foreground" />
+              </button>
+            )}
 
             <Link
               href="/account"

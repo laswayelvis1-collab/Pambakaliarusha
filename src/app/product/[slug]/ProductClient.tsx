@@ -51,29 +51,36 @@ export function ProductClient({ product, relatedProducts }: ProductClientProps) 
   const currentImage = imageUrls[selectedImageIndex] || imageUrls[0] || "/placeholder.jpg";
 
   const handleAddToCart = async () => {
-    if (!selectedSize || !selectedColor) return;
-    
-    setIsAdding(true);
-    try {
-      const res = await fetch("/api/cart", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          product_id: product.id,
-          size: selectedSize,
-          color: selectedColor,
-          qty: quantity,
-          unit_price_cents: product.price_cents,
-        }),
-      });
+    const cartItem = {
+      product_id: product.id,
+      title: product.title,
+      size: selectedSize || "Default",
+      color: selectedColor || "Default",
+      qty: quantity,
+      price: product.price_cents / 100,
+      image: product.image_urls?.[0] || "/placeholder.jpg",
+    };
 
-      if (res.ok) {
-        window.location.href = "/cart";
+    try {
+      const existing = localStorage.getItem("cart");
+      const cart = existing ? JSON.parse(existing) : [];
+      const existingIndex = cart.findIndex(
+        (item: any) => 
+          item.product_id === cartItem.product_id && 
+          item.size === cartItem.size && 
+          item.color === cartItem.color
+      );
+
+      if (existingIndex >= 0) {
+        cart[existingIndex].qty += quantity;
+      } else {
+        cart.push(cartItem);
       }
+
+      localStorage.setItem("cart", JSON.stringify(cart));
+      window.location.href = "/cart";
     } catch (err) {
       console.error("Failed to add to cart:", err);
-    } finally {
-      setIsAdding(false);
     }
   };
 
@@ -191,7 +198,7 @@ export function ProductClient({ product, relatedProducts }: ProductClientProps) 
                   variant="primary"
                   size="lg"
                   className="flex-1"
-                  disabled={!selectedSize || !selectedColor || isAdding}
+                  disabled={isAdding}
                   onClick={handleAddToCart}
                 >
                   {isAdding ? "Adding..." : "Add to Cart"}
